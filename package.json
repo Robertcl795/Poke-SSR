@@ -50,7 +50,6 @@
     "@angular/compiler-cli": "^19.1.0",
     "@eslint/js": "^9.21.0",
     "@netlify/angular-runtime": "^2.2.2",
-    "@netlify/plugin-angular-universal": "^1.0.1",
     "@testing-library/angular": "^17.3.6",
     "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
