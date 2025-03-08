@@ -24,13 +24,6 @@ const angularAppEngine = new AngularAppEngine();
  */
 
 /**
- * Handle root path and redirect to /about
- */
-app.get('/', (req, res) => {
-  res.redirect('/about');
-});
-
-/**
  * Serve static files from /browser
  */
 app.use(

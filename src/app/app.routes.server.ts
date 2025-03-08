@@ -2,15 +2,11 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
-    path: 'about',
+    path: '',
     renderMode: RenderMode.Prerender,
   },
   {
-    path: 'pricing',
-    renderMode: RenderMode.Prerender,
-  },
-  {
-    path: 'contact',
+    path: 'pokemons/:id',
     renderMode: RenderMode.Prerender,
   },
   {
