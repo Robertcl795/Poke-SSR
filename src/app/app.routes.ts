@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'about',
+    pathMatch: 'full',
+  },
+  {
     path: 'about',
     loadComponent: () => import('./pages/about/about.component'),
   },
@@ -12,11 +17,6 @@ export const routes: Routes = [
   {
     path: 'contact',
     loadComponent: () => import('./pages/contact/contact.component'),
-  },
-  {
-    path: '',
-    redirectTo: 'about',
-    pathMatch: 'full',
   },
   {
     path: '**',
