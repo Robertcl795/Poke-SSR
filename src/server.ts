@@ -9,19 +9,14 @@ const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 const app = express();
-const angularAppEngine = new AngularAppEngine();
+let angularAppEngine: AngularAppEngine;
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/**', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+try {
+  angularAppEngine = new AngularAppEngine();
+} catch (error) {
+  console.error('Error initializing AngularAppEngine', error);
+  process.exit(1);
+}
 
 /**
  * Serve static files from /browser
@@ -33,6 +28,24 @@ app.use(
     redirect: false,
   })
 );
+
+/**
+ * Handle all other routes with Angular SSR
+ */
+app.get('*', async (req: any, res: any) => {
+  try {
+    const context = getContext();
+    const result = await angularAppEngine.handle(req, context);
+    if (result) {
+      res.send(result.body);
+    } else {
+      res.status(404).send('Not found');
+    }
+  } catch (error) {
+    console.error('Error handling request', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 /**
  * Start the server if this module is the main entry point.
@@ -48,8 +61,13 @@ if (isMainModule(import.meta.url)) {
 export async function netlifyAppEngineHandler(request: Request): Promise<Response> {
   const context = getContext();
 
-  const result = await angularAppEngine.handle(request, context);
-  return result || new Response('Not found', { status: 404 });
+  try {
+    const result = await angularAppEngine.handle(request, context);
+    return result || new Response('Not found', { status: 404 });
+  } catch (error) {
+    console.error('Error handling request', error);
+    return new Response('Internal Server Error', { status: 500 });
+  }
 }
 
 /**
