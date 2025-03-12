@@ -1,12 +1,18 @@
-export default async function handler(request, context) {
-  console.log('Edge Function test running');
-  console.log('Available environment:', Object.keys(globalThis));
+import { AngularAppEngine } from '@angular/ssr';
 
+const engine = new AngularAppEngine();
+
+export default async (request, context) => {
+  // Skip SSR for static assets
   const url = new URL(request.url);
-  console.log('Requested path:', url.pathname);
+  if (url.pathname.startsWith('/assets/') || url.pathname.match(/\.(js|css|ico|png|jpg|svg)$/)) {
+    return;
+  }
 
-  // Test response
-  return new Response('Edge Function is working! Path: ' + url.pathname, {
-    headers: { 'Content-Type': 'text/plain' },
-  });
-}
+  try {
+    return await engine.handle(request);
+  } catch (error) {
+    console.error('Error during SSR:', error);
+    return new Response('Server Error', { status: 500 });
+  }
+};
