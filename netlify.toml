@@ -1,7 +1,9 @@
 [build]
   command = "npm run build"
   publish = "dist/poke-ssr/browser"
-  functions = "netlify/functions"
+
+[[plugins]]
+  package = "./netlify/build-plugins/debug-paths"
 
 [[edge_functions]]
   path = "/*"
