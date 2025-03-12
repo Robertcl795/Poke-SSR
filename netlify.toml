@@ -1,11 +1,11 @@
 [build]
   command = "npm run build"
   publish = "dist/browser"
+  functions = "netlify/functions"
 
 [[edge_functions]]
   path = "/*"
   function = "angular-ssr"
-  exclude_pattern = "\\.(js|css|ico|jpg|png|svg)$|^/assets/"
 
 [dev]
   framework = "#custom"
@@ -13,7 +13,13 @@
   port = 4200
   targetPort = 4200
 
-# Make static assets bypass the Edge Function completely
+# Explicitly define which paths should be handled by the edge function
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/angular-ssr"
+  status = 200
+
+# Explicitly tell Netlify to serve static assets directly
 [[redirects]]
   from = "/assets/*"
   to = "/assets/:splat"
@@ -37,27 +43,3 @@
   to = "/:splat.ico"
   status = 200
   force = true
-
-[[redirects]]
-  from = "/*.svg"
-  to = "/:splat.svg"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/*.jpg"
-  to = "/:splat.jpg"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/*.png"
-  to = "/:splat.png"
-  status = 200
-  force = true
-
-# This should be the last redirect - catch all remaining routes for SSR
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/angular-ssr"
-  status = 200
