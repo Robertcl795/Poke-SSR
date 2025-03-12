@@ -59,12 +59,13 @@ if (isMainModule(import.meta.url)) {
   });
 }
 
-export async function netlifyAppEngineHandler(request: Request) {
+export async function netlifyAppEngineHandler(request: any) {
   const context = getContext();
   const url = new URL(request.url);
 
+  console.log(`netlifyAppEngineHandler processing: ${url.pathname}`);
+
   // Exclude API routes or other non-file paths you want to process with SSR
-  // This is important to prevent trying to fetch static assets through SSR
   if (
     url.pathname.startsWith('/assets/') ||
     url.pathname.endsWith('.js') ||
@@ -74,18 +75,30 @@ export async function netlifyAppEngineHandler(request: Request) {
     url.pathname.endsWith('.jpg') ||
     url.pathname.endsWith('.png')
   ) {
-    // Let Netlify's default handling manage static assets
-    // The Edge Function should return null to fall back to CDN/static file handling
+    console.log('Static asset detected in netlifyAppEngineHandler, returning null');
     return null;
   }
 
   try {
-    // Only process SSR routes
+    // Explicitly handle root path
+    if (url.pathname === '/' || url.pathname === '') {
+      console.log('Processing root path');
+    }
+
+    // Process the request with Angular SSR
+    console.log('Calling angularAppEngine.handle');
     const result = await angularAppEngine.handle(request, context);
-    return result || new Response('Not found', { status: 404 });
-  } catch (error) {
-    console.error('Error handling request', error);
-    return new Response('Internal Server Error', { status: 500 });
+
+    if (result) {
+      console.log(`SSR successful, returning result with status: ${result.status}`);
+      return result;
+    } else {
+      console.log('No result from angularAppEngine.handle, returning 404');
+      return new Response('Not found', { status: 404 });
+    }
+  } catch (error: any) {
+    console.error('Error in netlifyAppEngineHandler:', error);
+    return new Response(`Server Error: ${error.message}`, { status: 500 });
   }
 }
 
