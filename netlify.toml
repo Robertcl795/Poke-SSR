@@ -1,0 +1,45 @@
+[build]
+  command = "npm run build"
+  publish = "dist/browser"
+  functions = "netlify/functions"
+
+[[edge_functions]]
+  path = "/*"
+  function = "angular-ssr"
+
+[dev]
+  framework = "#custom"
+  command = "npm run dev"
+  port = 4200
+  targetPort = 4200
+
+# Explicitly define which paths should be handled by the edge function
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/angular-ssr"
+  status = 200
+
+# Explicitly tell Netlify to serve static assets directly
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*.js"
+  to = "/:splat.js"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*.css"
+  to = "/:splat.css"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*.ico"
+  to = "/:splat.ico"
+  status = 200
+  force = true
