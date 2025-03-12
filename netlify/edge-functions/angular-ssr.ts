@@ -1,4 +1,4 @@
-import { netlifyAppEngineHandler } from '../../server';
+import { netlifyAppEngineHandler } from '../../src/server';
 
 export default async function handler(request: any, context: any) {
   // Log incoming request details
